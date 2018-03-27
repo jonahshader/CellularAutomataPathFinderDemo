@@ -7,14 +7,15 @@ import processing.event.MouseEvent;
 import java.awt.*;
 
 public class Main extends PApplet{
-    public final int WIDTH = 320;
-    public final int HEIGHT = 240;
+    public final int WIDTH = 180;
+    public final int HEIGHT = 120;
     boolean[][] world, exploredArea, newArea;
     Point[][] parents;
     int targetX, targetY, startX, startY;
     double fillPercent = 0.25;
     PGraphics batch;
     boolean reachedTarget;
+    boolean paused = false;
 
     public static void main(String[] args) {
         PApplet.main("jonahshader.Main");
@@ -22,7 +23,7 @@ public class Main extends PApplet{
 
     @Override
     public void settings() {
-        size(WIDTH * 3, HEIGHT * 3);
+        size(WIDTH * 6, HEIGHT * 6);
         noSmooth();
     }
 
@@ -41,7 +42,13 @@ public class Main extends PApplet{
 
     @Override
     public void draw() {
-        spread();
+        int mouseWorldX = (int) (((float) mouseX / width) * WIDTH);
+        int mouseWorldY = (int) (((float) mouseY / height) * HEIGHT);
+        if (mouseWorldX >= 0 && mouseWorldX < WIDTH && mouseWorldY >= 0 && mouseWorldY < HEIGHT && mousePressed)
+            world[mouseWorldX][mouseWorldY] = true;
+        if (!paused) {
+            spread();
+        }
         batch.beginDraw();
         batch.background(0, 0, 0);
         drawArray(world, 255, 255, 255);
@@ -157,13 +164,18 @@ public class Main extends PApplet{
     }
     @Override
     public void keyPressed() {
-        world = new boolean[WIDTH][HEIGHT];
-        exploredArea = new boolean[WIDTH][HEIGHT];
-        parents = new Point[WIDTH][HEIGHT];
-        generateTerrain();
-        calculateStartEndPos();
-        exploredArea[startX][startY] = true;
-        reachedTarget = false;
+        if (keyCode == 'p' || keyCode ==  'P') {
+            paused = !paused;
+        } else {
+            world = new boolean[WIDTH][HEIGHT];
+            exploredArea = new boolean[WIDTH][HEIGHT];
+            parents = new Point[WIDTH][HEIGHT];
+            generateTerrain();
+            calculateStartEndPos();
+            exploredArea[startX][startY] = true;
+            reachedTarget = false;
+        }
+
     }
 
     @Override
