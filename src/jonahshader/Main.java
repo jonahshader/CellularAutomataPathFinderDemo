@@ -7,12 +7,12 @@ import processing.event.MouseEvent;
 import java.awt.*;
 
 public class Main extends PApplet{
-    public final int WIDTH = 180;
-    public final int HEIGHT = 120;
+    public final int WIDTH = 1920;
+    public final int HEIGHT = 1080;
     boolean[][] world, exploredArea, newArea;
-    Point[][] parents;
+    PointInt[][] parents;
     int targetX, targetY, startX, startY;
-    double fillPercent = 0.25;
+    double fillPercent = 0.225;
     PGraphics batch;
     boolean reachedTarget;
     boolean paused = false;
@@ -23,7 +23,7 @@ public class Main extends PApplet{
 
     @Override
     public void settings() {
-        size(WIDTH * 6, HEIGHT * 6);
+        size(WIDTH, HEIGHT);
         noSmooth();
     }
 
@@ -34,7 +34,7 @@ public class Main extends PApplet{
         batch = createGraphics(WIDTH, HEIGHT);
         world = new boolean[WIDTH][HEIGHT];
         exploredArea = new boolean[WIDTH][HEIGHT];
-        parents = new Point[WIDTH][HEIGHT];
+        parents = new PointInt[WIDTH][HEIGHT];
         generateTerrain();
         calculateStartEndPos();
         exploredArea[startX][startY] = true;
@@ -47,7 +47,8 @@ public class Main extends PApplet{
         if (mouseWorldX >= 0 && mouseWorldX < WIDTH && mouseWorldY >= 0 && mouseWorldY < HEIGHT && mousePressed)
             world[mouseWorldX][mouseWorldY] = true;
         if (!paused) {
-            spread();
+            while (!reachedTarget)
+                spread();
         }
         batch.beginDraw();
         batch.background(0, 0, 0);
@@ -107,28 +108,28 @@ public class Main extends PApplet{
                                 if (!world[x + 1][y]) {
                                     exploredArea[x + 1][y] = true;
                                     newArea[x + 1][y] = true;
-                                    parents[x + 1][y] = new Point(x, y);
+                                    parents[x + 1][y] = new PointInt(x, y);
                                 }
                             }
                             if (!exploredArea[x - 1][y]) {
                                 if (!world[x - 1][y]) {
                                     exploredArea[x - 1][y] = true;
                                     newArea[x - 1][y] = true;
-                                    parents[x - 1][y] = new Point(x, y);
+                                    parents[x - 1][y] = new PointInt(x, y);
                                 }
                             }
                             if (!exploredArea[x][y + 1]) {
                                 if (!world[x][y + 1]) {
                                     exploredArea[x][y + 1] = true;
                                     newArea[x][y + 1] = true;
-                                    parents[x][y + 1] = new Point(x, y);
+                                    parents[x][y + 1] = new PointInt(x, y);
                                 }
                             }
                             if (!exploredArea[x][y - 1]) {
                                 if (!world[x][y - 1]) {
                                     exploredArea[x][y - 1] = true;
                                     newArea[x][y - 1] = true;
-                                    parents[x][y - 1] = new Point(x, y);
+                                    parents[x][y - 1] = new PointInt(x, y);
                                 }
                             }
                         }
@@ -141,13 +142,13 @@ public class Main extends PApplet{
     private void drawPath() {
         batch.stroke(255, 0, 0);
         boolean foundStart = false;
-        Point parent = parents[targetX][targetY];
+        PointInt parent = parents[targetX][targetY];
         while (!foundStart) {
             if (parent == null) {
                 foundStart = true;
             } else {
                 batch.point(parent.x, parent.y);
-                parent = parents[(int) parent.getX()][(int) parent.getY()];
+                parent = parents[parent.x][parent.y];
             }
         }
     }
@@ -169,7 +170,7 @@ public class Main extends PApplet{
         } else {
             world = new boolean[WIDTH][HEIGHT];
             exploredArea = new boolean[WIDTH][HEIGHT];
-            parents = new Point[WIDTH][HEIGHT];
+            parents = new PointInt[WIDTH][HEIGHT];
             generateTerrain();
             calculateStartEndPos();
             exploredArea[startX][startY] = true;
