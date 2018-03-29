@@ -59,7 +59,13 @@ public class Main extends PApplet{
         batch.beginDraw();
         batch.background(0, 0, 0);
         drawArray(world, 255, 255, 255);
-        drawArray(exploredArea, 127, 127, 127);
+//        drawArray(exploredArea, 127, 127, 127);
+        for (Cell tempCell : cells) {
+            batch.stroke(128, 128, 128);
+            if (!tempCell.spreaded)
+                batch.stroke(255, 128, 0);
+            batch.point(tempCell.x, tempCell.y);
+        }
         if (reachedTarget) {
             drawPath();
         }
@@ -126,7 +132,7 @@ public class Main extends PApplet{
                                     newArea[x + 1][y] = true;
                                     parents[x + 1][y] = new PointInt(x, y);
                                     cells.add(new Cell(x + 1, y, x, y));
-                                    tempCell.spreaded = true;
+//                                    tempCell.spreaded = true;
                                 }
                             }
                             if (!exploredArea[x - 1][y]) {
@@ -135,7 +141,7 @@ public class Main extends PApplet{
                                     newArea[x - 1][y] = true;
                                     parents[x - 1][y] = new PointInt(x, y);
                                     cells.add(new Cell(x - 1, y, x, y));
-                                    tempCell.spreaded = true;
+//                                    tempCell.spreaded = true;
                                 }
                             }
                             if (!exploredArea[x][y + 1]) {
@@ -144,7 +150,7 @@ public class Main extends PApplet{
                                     newArea[x][y + 1] = true;
                                     parents[x][y + 1] = new PointInt(x, y);
                                     cells.add(new Cell(x, y + 1, x, y));
-                                    tempCell.spreaded = true;
+//                                    tempCell.spreaded = true;
                                 }
                             }
                             if (!exploredArea[x][y - 1]) {
@@ -153,12 +159,13 @@ public class Main extends PApplet{
                                     newArea[x][y - 1] = true;
                                     parents[x][y - 1] = new PointInt(x, y);
                                     cells.add(new Cell(x, y - 1, x, y));
-                                    tempCell.spreaded = true;
+//                                    tempCell.spreaded = true;
                                 }
                             }
                         }
                     }
                 }
+                tempCell.spreaded = true;
             }
             if (cells.size() == previousCellArraySize) {
                 noPath = true;
@@ -196,6 +203,8 @@ public class Main extends PApplet{
     public void keyPressed() {
         if (keyCode == 'p' || keyCode ==  'P') {
             paused = !paused;
+        } else if (keyCode == 's' || keyCode == 'S'){
+            saveFrame("screenshots/Path-#####.png");
         } else {
             constructStuff();
         }
